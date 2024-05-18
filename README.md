@@ -23,6 +23,7 @@
         let ballX = canvas.width / 2, ballY = canvas.height / 2;
         let ballDX = 2, ballDY = -2;
         const paddleSpeed = 4;
+        const aiSpeed = 2;
 
         function drawPaddle(x, y) {
             ctx.fillStyle = "#FFF";
@@ -37,6 +38,16 @@
             ctx.closePath();
         }
 
+        function moveAIPaddle() {
+            if (ballY < paddle2Y + paddleHeight / 2) {
+                paddle2Y -= aiSpeed;
+            } else if (ballY > paddle2Y + paddleHeight / 2) {
+                paddle2Y += aiSpeed;
+            }
+            // Ensure paddle stays within canvas
+            paddle2Y = Math.max(Math.min(paddle2Y, canvas.height - paddleHeight), 0);
+        }
+
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawPaddle(0, paddle1Y);
@@ -46,10 +57,12 @@
             ballX += ballDX;
             ballY += ballDY;
 
+            // Ball collision with top and bottom walls
             if(ballY + ballDY > canvas.height - ballRadius || ballY + ballDY < ballRadius) {
                 ballDY = -ballDY;
             }
 
+            // Ball collision with paddles
             if(ballX + ballDX > canvas.width - ballRadius) {
                 if(ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
                     ballDX = -ballDX;
@@ -66,11 +79,11 @@
                 }
             }
 
+            moveAIPaddle();
+
             document.addEventListener('keydown', function(event) {
-                if(event.key == 'w' && paddle1Y > 0) paddle1Y -= paddleSpeed;
-                if(event.key == 's' && paddle1Y < canvas.height - paddleHeight) paddle1Y += paddleSpeed;
-                if(event.key == 'ArrowUp' && paddle2Y > 0) paddle2Y -= paddleSpeed;
-                if(event.key == 'ArrowDown' && paddle2Y < canvas.height - paddleHeight) paddle2Y += paddleSpeed;
+                if(event.key == 'ArrowUp' && paddle1Y > 0) paddle1Y -= paddleSpeed;
+                if(event.key == 'ArrowDown' && paddle1Y < canvas.height - paddleHeight) paddle1Y += paddleSpeed;
             });
         }
 
